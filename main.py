@@ -80,14 +80,16 @@ class BatchRequest(BaseModel):
 
 @app.get("/")
 def index():
+    import curl_cffi as _cffi
     return {
         "service": "paypal-charger",
         "version": "1.0",
+        "curl_cffi_version": getattr(_cffi, "__version__", "unknown"),
         "default_site": engine.GIVEWP_SITES[0]["name"],
         "default_amount": "1.00",
         "default_currency": "USD",
         "bypass_features": [
-            "curl_cffi chrome131 (Chrome TLS fingerprint + JA3)",
+            "curl_cffi chrome fingerprint fallback chain (131/124/120/116/110)",
             "Per-request Faker identity (name, email, phone, address)",
             "Random UA rotation from Chrome 131 pool",
             "Human-like delays (300-1200ms) between requests",
