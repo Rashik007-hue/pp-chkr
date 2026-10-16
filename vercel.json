@@ -6,13 +6,6 @@
       "memory": 1024
     }
   },
-  "builds": [
-    {
-      "src": "api/index.py",
-      "use": "@vercel/python",
-      "config": { "maxLambdaSize": "250mb" }
-    }
-  ],
   "routes": [
     { "src": "/(.*)", "dest": "api/index.py" }
   ]
