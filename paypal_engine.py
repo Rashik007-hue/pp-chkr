@@ -166,6 +166,25 @@ LIVE_DECLINE_KEYWORDS = [
 faker = Faker()
 
 
+# ---------- Session builder with fingerprint fallback ----------
+
+def _make_session():
+    """Build a curl_cffi Session with the newest supported Chrome fingerprint.
+    Falls back through the list if a target isn't in this build's fingerprint table.
+
+    curl_cffi adds new Chrome fingerprints over time; older wheels on Vercel's
+    builder may not know 'chrome131'. This probes newest-first so the code works
+    on whatever version actually installed.
+    """
+    for target in ("chrome131", "chrome124", "chrome120", "chrome116", "chrome110", "chrome"):
+        try:
+            return cffi.Session(impersonate=target)
+        except Exception:
+            continue
+    # last resort — no impersonation, still works but weaker TLS fingerprint
+    return cffi.Session()
+
+
 # ---------- Helpers ----------
 
 def _human_delay(min_ms: float = 300, max_ms: float = 1200) -> None:
